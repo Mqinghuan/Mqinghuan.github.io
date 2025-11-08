@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>◍•ᴗ•◍</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(135deg, #ffe6f0, #ffcce6, #ffb3d9);
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      font-family: "Microsoft YaHei", cursive;
+    }
+
+    .bubble {
+      position: absolute;
+      pointer-events: auto;
+      cursor: pointer;
+      border-radius: 50%;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .bubble::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: 
+        radial-gradient(circle at 25% 20%, rgba(255,255,255,0.4), transparent 45%),
+        conic-gradient(
+          from var(--rotate, 0deg),
+          rgba(255,182,220,0.35),
+          rgba(182,220,255,0.35),
+          rgba(220,255,182,0.25),
+          rgba(255,220,182,0.35),
+          rgba(255,182,220,0.35)
+        );
+      box-shadow: inset 0 0 20px rgba(255,255,255,0.1);
+    }
+
+    .bubble::after {
+      content: '';
+      position: absolute;
+      top: 15%;
+      left: 22%;
+      width: 22%;
+      height: 22%;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.75);
+      filter: blur(1px);
+    }
+
+    .bubble-inner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #d0508f;
+      font-weight: bold;
+      text-align: center;
+      padding: 0.3em;
+      text-shadow:
+        1px 1px 0 #fff,
+        -1px -1px 0 #fff,
+        1px -1px 0 #fff,
+        -1px 1px 0 #fff,
+        0 0 6px rgba(255, 255, 255, 0.9);
+      line-height: 1.2;
+      font-size: 14px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .heart-particle {
+      position: absolute;
+      pointer-events: none;
+      font-size: 20px;
+      opacity: 0;
+      user-select: none;
+      z-index: 9998;
+    }
+
+    #big-heart {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      font-size: 300px;
+      opacity: 0;
+      color: #ff3385;
+      text-shadow: 
+        0 0 40px rgba(255, 51, 133, 0.9),
+        0 0 80px rgba(255, 105, 180, 0.7),
+        0 0 120px rgba(255, 150, 200, 0.5);
+      pointer-events: none;
+      z-index: 9999;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<div id="big-heart">❤️</div>
+
+<script>
+  const loveMessages = [
+    '喜欢你', '你是我的唯一', '与你相遇好幸运',
+    '想和你在一起', '每天都在想你', '你笑起来真好看',
+    '心动是你', '世界因你而甜', '抱抱充电',
+    '爱你如初', '余生请多指教', '你是我的小星星',
+    '今天也想见你', '有你在就很安心', '梦里都是你',
+    '只想牵你的手', '你是我的光'
+  ];
+
+  let isAnimatingHeart = false;
+  const activeBubbles = new Set();
+
+  function createBubble() {
+    if (isAnimatingHeart) return;
+
+    const bubble = document.createElement('div');
+    bubble.classList.add('bubble');
+
+    // 🎯 关键：大幅增加小泡泡比例，让画面更密集
+    const rand = Math.random();
+    let size;
+    if (rand < 0.5) {
+      size = 20 + Math.random() * 25;   // 超小泡泡：20~45px（占 50%！）
+    } else if (rand < 0.8) {
+      size = 50 + Math.random() * 30;   // 中泡泡：50~80px
+    } else {
+      size = 85 + Math.random() * 50;   // 大泡泡：85~135px
+    }
+
+    bubble.style.width = `${size}px`;
+    bubble.style.height = `${size}px`;
+
+    const startX = Math.random() * (window.innerWidth - size);
+    const startY = window.innerHeight + size;
+    bubble.style.left = `${startX}px`;
+    bubble.style.top = `${startY}px`;
+    bubble.style.setProperty('--rotate', `${Math.random() * 360}deg`);
+
+    // 💡 小泡泡更透明、更轻盈
+    if (size < 45) {
+      bubble.style.opacity = '0.6';
+    }
+
+    document.body.appendChild(bubble);
+    activeBubbles.add(bubble);
+
+    // ⏳ 飘浮时间：小泡泡慢一点，大泡泡快一点（视觉平衡）
+    const baseDuration = size < 45 ? 18000 : 12000; // 小泡泡飘 18 秒！
+    const duration = baseDuration + (Math.random() - 0.5) * 4000;
+
+    const anim = bubble.animate([
+      { top: `${startY}px`, opacity: size < 45 ? 0.3 : 0, transform: 'scale(0.3)' },
+      { 
+        top: `-${size * 2}px`, 
+        opacity: size < 45 ? 0.6 : 0.92, 
+        transform: `scale(${0.9 + size/200}) translateX(${(Math.random() - 0.5) * (size > 80 ? 80 : 40)}px)` 
+      }
+    ], {
+      duration: duration,
+      easing: 'cubic-bezier(0.2, 0.6, 0.4, 0.9)',
+      fill: 'forwards'
+    });
+
+    // 💌 文字只出现在中大型泡泡（避免小泡泡挤不下）
+    if (size > 48 && Math.random() > 0.2) { // 中大泡泡 80% 带字
+      const inner = document.createElement('div');
+      inner.classList.add('bubble-inner');
+      inner.textContent = loveMessages[Math.floor(Math.random() * loveMessages.length)];
+      const fontSize = Math.min(size / 3.8, 28);
+      inner.style.fontSize = `${Math.max(12, fontSize)}px`;
+      bubble.appendChild(inner);
+    }
+
+    bubble.addEventListener('click', () => {
+      popBubble(bubble, bubble.getBoundingClientRect());
+      removeBubble(bubble);
+    });
+
+    setTimeout(() => removeBubble(bubble), duration + 1000);
+  }
+
+  function removeBubble(bubble) {
+    if (activeBubbles.has(bubble)) {
+      activeBubbles.delete(bubble);
+      if (bubble.parentNode) bubble.remove();
+    }
+  }
+
+  function popBubble(element, rect) {
+    const count = 5 + Math.floor(Math.random() * 4);
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    for (let i = 0; i < count; i++) {
+      const heart = document.createElement('div');
+      heart.classList.add('heart-particle');
+      heart.innerHTML = '❤️';
+      heart.style.left = `${centerX}px`;
+      heart.style.top = `${centerY}px`;
+      document.body.appendChild(heart);
+
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 20 + Math.random() * 40;
+      const anim = heart.animate([
+        { transform: 'translate(0,0) scale(1)', opacity: 1 },
+        { transform: `translate(${Math.cos(angle)*distance}px, ${Math.sin(angle)*distance - 10}px) scale(0)`, opacity: 0 }
+      ], {
+        duration: 500 + Math.random() * 300,
+        easing: 'cubic-bezier(0.2, 0.8, 0.4, 1)'
+      });
+      anim.onfinish = () => heart.remove();
+    }
+  }
+
+  // —————— 智能爱心（等泡泡 ≥50 个才触发）——————
+  async function showBigHeartAndExplode() {
+    while (activeBubbles.size < 50 && !isAnimatingHeart) {
+      await new Promise(r => setTimeout(r, 400));
+    }
+
+    isAnimatingHeart = true;
+
+    activeBubbles.forEach(b => {
+      b.style.transition = 'opacity 0.5s ease-out';
+      b.style.opacity = '0';
+    });
+    await new Promise(r => setTimeout(r, 500));
+
+    activeBubbles.forEach(b => {
+      if (b.parentNode) b.remove();
+    });
+    activeBubbles.clear();
+
+    const bigHeart = document.getElementById('big-heart');
+    bigHeart.style.opacity = '1';
+
+    await new Promise(r => {
+      bigHeart.animate([
+        { transform: 'translate(-50%, -50%) scale(0)', opacity: 0 },
+        { transform: 'translate(-50%, -50%) scale(1.1)', opacity: 1 },
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 }
+      ], {
+        duration: 1000,
+        easing: 'cubic-bezier(0.17, 0.67, 0.12, 1.01)',
+        fill: 'forwards'
+      }).onfinish = r;
+    });
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    for (let i = 0; i < 90; i++) {
+      const heart = document.createElement('div');
+      heart.classList.add('heart-particle');
+      heart.innerHTML = '❤️';
+      heart.style.left = `${centerX}px`;
+      heart.style.top = `${centerY}px`;
+      heart.style.fontSize = `${16 + Math.random() * 18}px`;
+      document.body.appendChild(heart);
+
+      const angle = (i / 90) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+      const distance = 250 + Math.random() * 220;
+      heart.animate([
+        { transform: 'translate(0,0) scale(1.2)', opacity: 1 },
+        { transform: `translate(${Math.cos(angle)*distance}px, ${Math.sin(angle)*distance}px) scale(0)`, opacity: 0 }
+      ], {
+        duration: 1500 + Math.random() * 800,
+        easing: 'cubic-bezier(0.1, 0.9, 0.4, 1)'
+      }).onfinish = () => heart.remove();
+    }
+
+    bigHeart.animate([
+      { opacity: 1 },
+      { opacity: 0 }
+    ], {
+      duration: 1000,
+      easing: 'ease-out',
+      fill: 'forwards'
+    });
+
+    await new Promise(r => setTimeout(r, 1200));
+    isAnimatingHeart = false;
+  }
+
+  // —————— 超高频泡泡生成（每 60ms 一个！）——————
+  let lastBubbleTime = 0;
+  const BUBBLE_INTERVAL = 60; // ≈16~17个/秒
+
+  function bubbleLoop(timestamp) {
+    if (timestamp - lastBubbleTime > BUBBLE_INTERVAL) {
+      createBubble();
+      lastBubbleTime = timestamp;
+    }
+    requestAnimationFrame(bubbleLoop);
+  }
+
+  requestAnimationFrame(bubbleLoop);
+
+  // 首次爱心稍晚，确保泡泡海洋成型
+  setTimeout(() => {
+    showBigHeartAndExplode();
+    setInterval(showBigHeartAndExplode, 18000);
+  }, 8000);
+</script>
+
+</body>
+</html>
