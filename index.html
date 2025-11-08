@@ -34,7 +34,6 @@
       50% { opacity: 0.6; }
     }
 
-    /* 💓 强化版呼吸动画：明显忽大忽小 */
     @keyframes breath {
       0%, 100% {
         transform: scale(0.92);
@@ -50,8 +49,6 @@
       position: absolute;
       width: 24px;
       height: 24px;
-      left: calc(50% - 12px);
-      top: 30%;
       z-index: 10;
       cursor: pointer;
       animation: breath 2.0s infinite ease-in-out;
@@ -109,10 +106,14 @@
 <body>
 
 <div id="stars"></div>
-<a href="./sn.html" class="thought-star" id="thought-star"></a>
+
+<a href="./sn.html" class="thought-star" id="star-sn"></a>
+<a href="./xh.html" class="thought-star" id="star-xh"></a>
+
 <div id="smile-hint">∩_∩</div>
 
 <script>
+  // ========== 星空背景 ==========
   const starsContainer = document.getElementById('stars');
   const count = Math.min(300, Math.floor(window.innerWidth * window.innerHeight / 2000));
   for (let i = 0; i < count; i++) {
@@ -126,29 +127,51 @@
     starsContainer.appendChild(s);
   }
 
-  const star = document.getElementById('thought-star');
+  // ========== 设置两颗星星位置（居中但自然错落）==========
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight * 0.35; // 稍偏上，视觉更舒适
+
+  const starSn = document.getElementById('star-sn');
+  const starXh = document.getElementById('star-xh');
+
+  // 手动微调位置：自然、居中、不呆板
+  starSn.style.left = `${centerX - 50}px`;   // 左侧一点
+  starSn.style.top = `${centerY + 8}px`;     // 稍微下一点
+
+  starXh.style.left = `${centerX + 40}px`;   // 右侧一点（不对称间距）
+  starXh.style.top = `${centerY - 12}px`;    // 稍微上一点
+
+  // ========== 颜文字提示逻辑 ==========
   const hint = document.getElementById('smile-hint');
 
-  function showSmile() {
-    const rect = star.getBoundingClientRect();
+  function showSmile(targetStar, text) {
+    const rect = targetStar.getBoundingClientRect();
     const x = rect.right + 10;
     const y = rect.top + rect.height / 2 - 7;
+
+    hint.textContent = text;
     hint.style.left = x + 'px';
     hint.style.top = y + 'px';
     hint.classList.add('show');
+
     setTimeout(() => hint.classList.remove('show'), 2000);
   }
 
-  star.addEventListener('mouseenter', showSmile);
-  star.addEventListener('click', showSmile);
-  star.addEventListener('touchstart', e => {
+  // 绑定交互
+  starSn.addEventListener('mouseenter', () => showSmile(starSn, '∩_∩'));
+  starSn.addEventListener('click', () => showSmile(starSn, '∩_∩'));
+  starSn.addEventListener('touchstart', e => {
     e.preventDefault();
-    showSmile();
+    showSmile(starSn, '∩_∩');
+  });
+
+  starXh.addEventListener('mouseenter', () => showSmile(starXh, '◍•ᴗ•◍'));
+  starXh.addEventListener('click', () => showSmile(starXh, '◍•ᴗ•◍'));
+  starXh.addEventListener('touchstart', e => {
+    e.preventDefault();
+    showSmile(starXh, '◍•ᴗ•◍');
   });
 </script>
 
 </body>
 </html>
-</body>
-</html>
-
