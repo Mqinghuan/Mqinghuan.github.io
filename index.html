@@ -34,19 +34,18 @@
       50% { opacity: 0.6; }
     }
 
-    /* 💫 呼吸动画 */
+    /* 💫 呼吸动画（优化后） */
     @keyframes breath {
       0%, 100% {
         transform: scale(1);
         opacity: 0.92;
       }
-      50% {
+      55% {
         transform: scale(1.12);
         opacity: 1;
       }
     }
 
-    /* 💫 思念之星 */
     .thought-star {
       position: absolute;
       width: 24px;
@@ -55,12 +54,10 @@
       top: 30%;
       z-index: 10;
       cursor: pointer;
-      /* 使用呼吸动画替代 transition */
-      animation: breath 3.2s infinite ease-in-out;
+      animation: breath 2.0s infinite ease-in-out; /* ← 关键修改 */
       pointer-events: auto;
     }
 
-    /* 悬停时暂停呼吸，增强交互感 */
     .thought-star:hover {
       animation-play-state: paused;
     }
@@ -89,7 +86,6 @@
         0 0 30px rgba(255, 255, 255, 0.7);
     }
 
-    /* ✨ ∩_∩ 颜文字 */
     #smile-hint {
       position: absolute;
       color: #f0f0f0;
@@ -111,7 +107,6 @@
 </head>
 <body>
 
-/* ✨ 思念的网址 */
 <div id="stars"></div>
 <a href="./sn.html" class="thought-star" id="thought-star"></a>
 <div id="smile-hint">∩_∩</div>
@@ -153,4 +148,3 @@
 
 </body>
 </html>
-
