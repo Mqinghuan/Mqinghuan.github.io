@@ -121,7 +121,7 @@
 
   function showHeart() {
     heartDone = false;
-    const tCount = 180; // 增加爱心弹窗的密度
+    const tCount = 150; // 增加爱心弹窗的密度
     const points = [];
     for (let i = 0; i < tCount; i++) {
       const t = (i / tCount) * Math.PI * 2;
@@ -148,10 +148,10 @@
             createPopup(xx, yy, messages[Math.floor(Math.random() * messages.length)], colors[Math.floor(Math.random() * colors.length)], true);
           }
         }
-      }, i * 300); // 减缓弹窗显示速度至每300毫秒一个
+      }, i * 220); // 减缓弹窗显示速度至每220毫秒一个
     });
 
-    setTimeout(explode, tCount * 300 + 2000); // 等待时间相应调整
+    setTimeout(explode, tCount * 220 + 2000); // 等待时间相应调整
   }
 
   function explode() {
@@ -201,3 +201,4 @@
 
 </body>
 </html>
+
