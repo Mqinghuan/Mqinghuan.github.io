@@ -34,6 +34,18 @@
       50% { opacity: 0.6; }
     }
 
+    /* 💫 呼吸动画 */
+    @keyframes breath {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.92;
+      }
+      50% {
+        transform: scale(1.12);
+        opacity: 1;
+      }
+    }
+
     /* 💫 思念之星 */
     .thought-star {
       position: absolute;
@@ -43,9 +55,16 @@
       top: 30%;
       z-index: 10;
       cursor: pointer;
-      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.4, 1);
+      /* 使用呼吸动画替代 transition */
+      animation: breath 3.2s infinite ease-in-out;
       pointer-events: auto;
     }
+
+    /* 悬停时暂停呼吸，增强交互感 */
+    .thought-star:hover {
+      animation-play-state: paused;
+    }
+
     .thought-star::after {
       content: '';
       position: absolute;
@@ -70,23 +89,23 @@
         0 0 30px rgba(255, 255, 255, 0.7);
     }
 
-    /* ✨ ∩_∩ 颜文字：更小、更柔和、放右边 */
+    /* ✨ ∩_∩ 颜文字 */
     #smile-hint {
       position: absolute;
-      color: #f0f0f0;           /* 浅灰白，不刺眼 */
-      font-size: 14px;          /* 缩小 */
-      font-weight: normal;      /* 不加粗 */
+      color: #f0f0f0;
+      font-size: 14px;
+      font-weight: normal;
       opacity: 0;
       pointer-events: none;
       z-index: 200;
-      text-shadow: 0 0 6px rgba(255, 255, 255, 0.6); /* 柔和发光 */
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
       transition: opacity 0.3s, transform 0.3s;
-      white-space: nowrap;      /* 防止换行 */
-      transform: translateX(-10px); /* 初始向左偏移，用于淡入动画 */
+      white-space: nowrap;
+      transform: translateX(-10px);
     }
     #smile-hint.show {
       opacity: 1;
-      transform: translateX(0); /* 滑入到右侧 */
+      transform: translateX(0);
     }
   </style>
 </head>
@@ -97,8 +116,6 @@
 <div id="smile-hint">∩_∩</div>
 
 <script>
-  // 背景星星（略，同前）
-
   const starsContainer = document.getElementById('stars');
   const count = Math.min(300, Math.floor(window.innerWidth * window.innerHeight / 2000));
   for (let i = 0; i < count; i++) {
@@ -112,21 +129,16 @@
     starsContainer.appendChild(s);
   }
 
-  // ✅ 颜文字：显示在星星右侧
   const star = document.getElementById('thought-star');
   const hint = document.getElementById('smile-hint');
 
   function showSmile() {
     const rect = star.getBoundingClientRect();
-    // 定位到星星右侧：x = 星星右边缘 + 10px
     const x = rect.right + 10;
-    // 垂直居中：y = 星星顶部 + 高度一半 - 文字高度一半（≈7px）
     const y = rect.top + rect.height / 2 - 7;
-
     hint.style.left = x + 'px';
     hint.style.top = y + 'px';
     hint.classList.add('show');
-
     setTimeout(() => hint.classList.remove('show'), 2000);
   }
 
@@ -139,5 +151,4 @@
 </script>
 
 </body>
-
 </html>
