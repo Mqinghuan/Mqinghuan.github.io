@@ -63,7 +63,7 @@
     '我想你了',
     '我好想你',
     '今天有没有\n好好吃饭呀',
-    '别熬夜啦\n对身体不好',
+    '少熬夜哦\n对身体不好',
     '天气变凉了\n要记得加衣服',
     '希望你今天\n也被温柔对待',
     '不开心的时候\n可以找我哦',
@@ -76,25 +76,19 @@
     '你在我心里\n是特别的存在',
     '能不能\n也喜欢我',
     '偷偷告诉你\n超级喜欢你',
-    '你抬头看\n那颗最亮的星是我',
+    '想和你一起\n走在晚风里',
     '要一直开心呀'
   ];
 
-  // 💕 浅粉 / 浅蓝 / 浅紫 / 浅红 / 浅黄 —— 柔和糖果色
   const colors = [
-    '#FFF0F5', // 极浅粉
-    '#E6FFFF', // 极浅蓝
-    '#F8F7FF', // 极浅紫
-    '#FFF0F0', // 极浅红（樱花）
-    '#FFFFEB', // 极浅黄（奶油）
-    '#FAF9FF', // 更淡的紫
-    '#F0FEFF', // 极浅青（薄荷感）
-    '#FFF2F0'  // 极浅珊瑚
+    '#FFF0F5', '#E6FFFF', '#F8F7FF', '#FFF0F0',
+    '#FFFFEB', '#FAF9FF', '#F0FEFF', '#FFF2F0'
   ];
 
   let allPopups = [];
   const MAX = 600;
   let heartDone = false;
+  let spamInterval = null;
 
   function createPopup(x, y, msg, color, isHeart = false) {
     const div = document.createElement('div');
@@ -110,7 +104,22 @@
     return rec;
   }
 
+  // 清除所有弹窗（保留爱心标记）
+  function clearAllPopups(keepHeart = false) {
+    allPopups.forEach(p => {
+      if (!keepHeart || !p.isHeart) {
+        p.el.style.opacity = '0';
+        p.el.style.transform = 'scale(0.3)';
+        setTimeout(() => {
+          if (p.el.parentNode) p.el.remove();
+        }, 600);
+      }
+    });
+    allPopups = keepHeart ? allPopups.filter(p => p.isHeart) : [];
+  }
+
   function showHeart() {
+    heartDone = false;
     const tCount = 60;
     const points = [];
     for (let i = 0; i < tCount; i++) {
@@ -151,10 +160,14 @@
       p.el.style.top = `${y}px`;
     });
     startSpam();
+    
+    // ⏳ 8秒后自动重启爱心循环
+    setTimeout(restartCycle, 8000);
   }
 
   function startSpam() {
-    setInterval(() => {
+    if (spamInterval) clearInterval(spamInterval);
+    spamInterval = setInterval(() => {
       if (allPopups.length < MAX) {
         const x = Math.random() * (window.innerWidth - 110);
         const y = Math.random() * (window.innerHeight - 45);
@@ -173,8 +186,22 @@
     }, 60);
   }
 
-  window.addEventListener('load', showHeart);
-</script>
+  function restartCycle() {
+    // 停止随机弹窗
+    if (spamInterval) {
+      clearInterval(spamInterval);
+      spamInterval = null;
+    }
+    // 清除非爱心弹窗（爱心可选保留或清除，这里选择全清更干净）
+    clearAllPopups(false);
+    // 稍等片刻，重新开始爱心
+    setTimeout(showHeart, 800);
+  }
 
+  window.addEventListener('load', () => {
+    showHeart();
+  });
+</script>
 </body>
 </html>
+
