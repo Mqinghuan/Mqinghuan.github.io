@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>∩_∩</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #f0f8ff; /* 超级浅的冰蓝紫色背景 */
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+    .popup {
+      position: absolute;
+      width: 110px;
+      height: 45px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #555; /* 深灰色文字，温柔且清晰 */
+      font-size: 12px;
+      font-weight: bold;
+      text-align: center;
+      z-index: 9999;
+      cursor: pointer;
+      user-select: none;
+      opacity: 0;
+      transform: scale(0.4);
+      transition: all 0.6s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06); /* 极淡阴影 */
+      padding: 3px 5px;
+      line-height: 1.2;
+    }
+    .popup.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .popup:hover {
+      transform: scale(1.15) !important;
+      z-index: 10000 !important;
+    }
+  </style>
+</head>
+<body>
+
+<script>
+  const messages = ['喜欢你','我想你了','要开心呀','你很重要','每天都要快乐','学习顺利','好好休息','我好想你'];
+
+  // 💕 浅粉 / 浅蓝 / 浅紫 / 浅红 / 浅黄 —— 柔和糖果色
+  const colors = [
+  '#FFF0F5', // 极浅粉
+  '#E6FFFF', // 极浅蓝
+  '#F8F7FF', // 极浅紫
+  '#FFF0F0', // 极浅红（樱花）
+  '#FFFFEB', // 极浅黄（奶油）
+  '#FAF9FF', // 更淡的紫
+  '#F0FEFF', // 极浅青（薄荷感）
+  '#FFF2F0'  // 极浅珊瑚
+  ];
+
+  let allPopups = [];
+  const MAX = 600;
+  let heartDone = false;
+
+  function createPopup(x, y, msg, color, isHeart = false) {
+    const div = document.createElement('div');
+    div.className = 'popup';
+    div.innerHTML = msg.replace(/\n/g, '<br>');
+    div.style.backgroundColor = color;
+    div.style.left = `${x - 55}px`;
+    div.style.top = `${y - 22.5}px`;
+    document.body.appendChild(div);
+    const rec = {el: div, isHeart, time: Date.now()};
+    allPopups.push(rec);
+    setTimeout(() => div.classList.add('show'), 10);
+    return rec;
+  }
+
+  function showHeart() {
+    const tCount = 60;
+    const points = [];
+    for (let i = 0; i < tCount; i++) {
+      const t = (i / tCount) * Math.PI * 2;
+      const x = 16 * Math.pow(Math.sin(t), 3);
+      const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+      points.push({x, y});
+    }
+    const xs = points.map(p => p.x), ys = points.map(p => p.y);
+    const minX = Math.min(...xs), maxX = Math.max(...xs);
+    const minY = Math.min(...ys), maxY = Math.max(...ys);
+    const scale = Math.min(window.innerWidth * 0.8 / (maxX - minX), window.innerHeight * 0.7 / (maxY - minY)) * 0.95;
+    const offsetX = window.innerWidth / 2 - ((minX + maxX) / 2) * scale;
+    const offsetY = window.innerHeight / 2 - ((minY + maxY) / 2) * scale;
+
+    points.forEach((p, i) => {
+      setTimeout(() => {
+        if (!heartDone) {
+          const xx = offsetX + p.x * scale;
+          const yy = offsetY + p.y * scale;
+          if (xx > 0 && xx < window.innerWidth && yy > 0 && yy < window.innerHeight) {
+            createPopup(xx, yy, messages[Math.floor(Math.random()*messages.length)], colors[Math.floor(Math.random()*colors.length)], true);
+          }
+        }
+      }, i * 30);
+    });
+
+    setTimeout(explode, tCount * 30 + 1500);
+  }
+
+  function explode() {
+    heartDone = true;
+    allPopups.filter(p => p.isHeart).forEach(p => {
+      const x = Math.random() * (window.innerWidth - 110);
+      const y = Math.random() * (window.innerHeight - 45);
+      p.el.style.transition = 'all 1.2s cubic-bezier(0.2, 0.8, 0.4, 1)';
+      p.el.style.left = `${x}px`;
+      p.el.style.top = `${y}px`;
+    });
+    startSpam();
+  }
+
+  function startSpam() {
+    setInterval(() => {
+      if (allPopups.length < MAX) {
+        const x = Math.random() * (window.innerWidth - 110);
+        const y = Math.random() * (window.innerHeight - 45);
+        createPopup(x, y, messages[Math.floor(Math.random()*messages.length)], colors[Math.floor(Math.random()*colors.length)], false);
+      }
+      if (allPopups.length > MAX) {
+        const idx = allPopups.findIndex(p => !p.isHeart);
+        if (idx !== -1) {
+          const el = allPopups[idx].el;
+          el.style.opacity = '0';
+          el.style.transform = 'scale(0.5)';
+          setTimeout(() => { if (el.parentNode) el.remove(); }, 1000);
+          allPopups.splice(idx, 1);
+        }
+      }
+    }, 60);
+  }
+
+  window.addEventListener('load', showHeart);
+</script>
+
+</body>
+</html>
