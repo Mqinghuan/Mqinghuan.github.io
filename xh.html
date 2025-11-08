@@ -69,8 +69,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      /* 🔥 文字颜色已调亮！现在清晰可见 */
-      color: #ff3366; /* 更鲜艳的粉红 */
+      color: #ff3366;
       font-weight: bold;
       text-align: center;
       padding: 0.3em;
@@ -105,13 +104,12 @@
         0 0 40px rgba(255, 51, 133, 0.9),
         0 0 80px rgba(255, 105, 180, 0.7),
         0 0 120px rgba(255, 150, 200, 0.5);
-      pointer-events: auto; /* 允许点击 */
+      pointer-events: none; /* 默认不可点击 */
       z-index: 9999;
       white-space: nowrap;
       cursor: pointer;
     }
 
-    /* 💬 纯文字浮层（无背景） */
     .floating-text {
       position: fixed;
       top: 50%;
@@ -169,7 +167,6 @@
   const activeBubbles = new Set();
   const MAX_BUBBLES = 150;
 
-  // 💬 显示纯文字（用于泡泡点击 和 大爱心点击）
   function showFloatingText(text) {
     const el = document.createElement('div');
     el.className = 'floating-text';
@@ -180,7 +177,6 @@
     }, 2000);
   }
 
-  // 💥 泡泡炸裂效果
   function popBubble(element, rect) {
     const count = 5 + Math.floor(Math.random() * 3);
     const centerX = rect.left + rect.width / 2;
@@ -207,7 +203,6 @@
     }
   }
 
-  // 🎈 创建泡泡
   function createBubble() {
     if (isAnimatingHeart || activeBubbles.size >= MAX_BUBBLES) return;
 
@@ -267,7 +262,7 @@
       const msg = loveMessages[Math.floor(Math.random() * loveMessages.length)];
       inner.textContent = msg;
       const fontSize = Math.min(size / 4, 24);
-      inner.style.fontSize = `${Math.max(14, fontSize)}px`; // 最小14号字，更清晰
+      inner.style.fontSize = `${Math.max(14, fontSize)}px`;
       bubble.appendChild(inner);
     }
 
@@ -294,7 +289,6 @@
     }
   }
 
-  // 💖 大爱心出现逻辑（每20秒一次）
   async function showBigHeartAndExplode() {
     while (activeBubbles.size < 50 && !isAnimatingHeart) {
       await new Promise(r => setTimeout(r, 300));
@@ -302,6 +296,7 @@
 
     isAnimatingHeart = true;
 
+    // 隐藏泡泡
     activeBubbles.forEach(b => {
       b.style.transition = 'opacity 0.4s ease-out';
       b.style.opacity = '0';
@@ -314,6 +309,9 @@
     activeBubbles.clear();
 
     const bigHeart = document.getElementById('big-heart');
+    
+    // ✅ 关键修复：显示前开启点击
+    bigHeart.style.pointerEvents = 'auto';
     bigHeart.style.opacity = '1';
 
     await new Promise(r => {
@@ -351,6 +349,8 @@
       }).onfinish = () => heart.remove();
     }
 
+    // ✅ 关键修复：动画结束前关闭点击
+    bigHeart.style.pointerEvents = 'none';
     bigHeart.animate([
       { opacity: 1 },
       { opacity: 0 }
@@ -364,16 +364,14 @@
     isAnimatingHeart = false;
   }
 
-  // 🖱️ 点击大爱心：立即炸裂 + 显示「我喜欢你」
+  // 💖 点击大爱心：只在可见时生效（因为 pointer-events 已控制）
   document.getElementById('big-heart').addEventListener('click', function(e) {
     e.stopPropagation();
-    // 获取当前位置（即使在动画中也能准确定位）
     const rect = this.getBoundingClientRect();
     popBubble(this, rect);
     showFloatingText('我喜欢你');
   });
 
-  // 启动泡泡循环
   let lastBubbleTime = 0;
   const BUBBLE_INTERVAL = 50;
   function bubbleLoop(timestamp) {
@@ -385,7 +383,6 @@
   }
   requestAnimationFrame(bubbleLoop);
 
-  // 首次大爱心在8秒后出现，之后每20秒一次
   setTimeout(() => {
     showBigHeartAndExplode();
     setInterval(showBigHeartAndExplode, 20000);
