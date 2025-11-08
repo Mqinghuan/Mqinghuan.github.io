@@ -118,32 +118,32 @@
 
 <script>
   const loveMessages = [
-    '喜欢你', '你是我的唯一', '与你相遇好幸运',
-    '想和你在一起', '每天都在想你', 
+    '喜欢你', '与你相遇好幸运',
     '心动是你', '世界因你而美好', '抱抱',
-    '爱你', '未来请多指教', '你是我的苍穹',
-    '今天也想见你', '有你在就很安心', '喜欢不由自主',
+    '未来请多指教', '今天也想见你',
+    '有你在就很安心', '喜欢不由自主',
     '今晚月色真美'
   ];
 
   let isAnimatingHeart = false;
   const activeBubbles = new Set();
+  const MAX_BUBBLES = 150; // 控制总数，防卡顿
 
   function createBubble() {
-    if (isAnimatingHeart) return;
+    if (isAnimatingHeart || activeBubbles.size >= MAX_BUBBLES) return;
 
     const bubble = document.createElement('div');
     bubble.classList.add('bubble');
 
-    // 🎯 关键：大幅增加小泡泡比例，让画面更密集
+    // 🎯 调整尺寸分布：取消超小泡泡，整体更大更饱满
     const rand = Math.random();
     let size;
-    if (rand < 0.5) {
-      size = 20 + Math.random() * 25;   // 超小泡泡：20~45px（占 50%！）
-    } else if (rand < 0.8) {
-      size = 50 + Math.random() * 30;   // 中泡泡：50~80px
+    if (rand < 0.6) {
+      size = 30 + Math.random() * 30;   // 小泡泡：30~60px（占 60%，但不再“太小”）
+    } else if (rand < 0.9) {
+      size = 60 + Math.random() * 40;   // 中泡泡：60~100px
     } else {
-      size = 85 + Math.random() * 50;   // 大泡泡：85~135px
+      size = 100 + Math.random() * 50;  // 大泡泡：100~150px
     }
 
     bubble.style.width = `${size}px`;
@@ -155,24 +155,27 @@
     bubble.style.top = `${startY}px`;
     bubble.style.setProperty('--rotate', `${Math.random() * 360}deg`);
 
-    // 💡 小泡泡更透明、更轻盈
-    if (size < 45) {
+    // 透明度微调：小泡泡稍淡，大泡泡更实
+    if (size < 50) {
       bubble.style.opacity = '0.6';
+    } else if (size < 80) {
+      bubble.style.opacity = '0.75';
+    } else {
+      bubble.style.opacity = '0.9';
     }
 
     document.body.appendChild(bubble);
     activeBubbles.add(bubble);
 
-    // ⏳ 飘浮时间：小泡泡慢一点，大泡泡快一点（视觉平衡）
-    const baseDuration = size < 45 ? 18000 : 12000; // 小泡泡飘 18 秒！
-    const duration = baseDuration + (Math.random() - 0.5) * 4000;
+    const baseDuration = size < 60 ? 14000 : 10000;
+    const duration = baseDuration + (Math.random() - 0.5) * 3000;
 
     const anim = bubble.animate([
-      { top: `${startY}px`, opacity: size < 45 ? 0.3 : 0, transform: 'scale(0.3)' },
+      { top: `${startY}px`, opacity: 0, transform: 'scale(0.3)' },
       { 
         top: `-${size * 2}px`, 
-        opacity: size < 45 ? 0.6 : 0.92, 
-        transform: `scale(${0.9 + size/200}) translateX(${(Math.random() - 0.5) * (size > 80 ? 80 : 40)}px)` 
+        opacity: size < 50 ? 0.6 : (size < 80 ? 0.75 : 0.9), 
+        transform: `scale(${0.9 + size/200}) translateX(${(Math.random() - 0.5) * 60}px)` 
       }
     ], {
       duration: duration,
@@ -180,13 +183,13 @@
       fill: 'forwards'
     });
 
-    // 💌 文字只出现在中大型泡泡（避免小泡泡挤不下）
-    if (size > 48 && Math.random() > 0.2) { // 中大泡泡 80% 带字
+    // 💬 只有 ≥70px 的泡泡才可能带字，且概率仅 40%
+    if (size >= 70 && Math.random() > 0.6) {
       const inner = document.createElement('div');
       inner.classList.add('bubble-inner');
       inner.textContent = loveMessages[Math.floor(Math.random() * loveMessages.length)];
       const fontSize = Math.min(size / 3.8, 28);
-      inner.style.fontSize = `${Math.max(12, fontSize)}px`;
+      inner.style.fontSize = `${Math.max(14, fontSize)}px`;
       bubble.appendChild(inner);
     }
 
@@ -206,7 +209,7 @@
   }
 
   function popBubble(element, rect) {
-    const count = 5 + Math.floor(Math.random() * 4);
+    const count = 5 + Math.floor(Math.random() * 3);
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
@@ -231,19 +234,19 @@
     }
   }
 
-  // —————— 智能爱心（等泡泡 ≥50 个才触发）——————
+  // —————— 爱心动画（不变）——————
   async function showBigHeartAndExplode() {
     while (activeBubbles.size < 50 && !isAnimatingHeart) {
-      await new Promise(r => setTimeout(r, 400));
+      await new Promise(r => setTimeout(r, 300));
     }
 
     isAnimatingHeart = true;
 
     activeBubbles.forEach(b => {
-      b.style.transition = 'opacity 0.5s ease-out';
+      b.style.transition = 'opacity 0.4s ease-out';
       b.style.opacity = '0';
     });
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise(r => setTimeout(r, 400));
 
     activeBubbles.forEach(b => {
       if (b.parentNode) b.remove();
@@ -268,7 +271,7 @@
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
 
-    for (let i = 0; i < 90; i++) {
+    for (let i = 0; i < 80; i++) {
       const heart = document.createElement('div');
       heart.classList.add('heart-particle');
       heart.innerHTML = '❤️';
@@ -277,13 +280,13 @@
       heart.style.fontSize = `${16 + Math.random() * 18}px`;
       document.body.appendChild(heart);
 
-      const angle = (i / 90) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
-      const distance = 250 + Math.random() * 220;
+      const angle = (i / 80) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+      const distance = 220 + Math.random() * 200;
       heart.animate([
         { transform: 'translate(0,0) scale(1.2)', opacity: 1 },
         { transform: `translate(${Math.cos(angle)*distance}px, ${Math.sin(angle)*distance}px) scale(0)`, opacity: 0 }
       ], {
-        duration: 1500 + Math.random() * 800,
+        duration: 1400 + Math.random() * 700,
         easing: 'cubic-bezier(0.1, 0.9, 0.4, 1)'
       }).onfinish = () => heart.remove();
     }
@@ -301,9 +304,9 @@
     isAnimatingHeart = false;
   }
 
-  // —————— 超高频泡泡生成（每 60ms 一个！）——————
+  // —————— 泡泡生成（每 50ms 一个，密集但不卡）——————
   let lastBubbleTime = 0;
-  const BUBBLE_INTERVAL = 60; // ≈16~17个/秒
+  const BUBBLE_INTERVAL = 50; // ≈20个/秒
 
   function bubbleLoop(timestamp) {
     if (timestamp - lastBubbleTime > BUBBLE_INTERVAL) {
@@ -315,13 +318,11 @@
 
   requestAnimationFrame(bubbleLoop);
 
-  // 首次爱心稍晚，确保泡泡海洋成型
   setTimeout(() => {
     showBigHeartAndExplode();
-    setInterval(showBigHeartAndExplode, 18000);
+    setInterval(showBigHeartAndExplode, 20000);
   }, 8000);
 </script>
-
 </body>
 
 </html>
