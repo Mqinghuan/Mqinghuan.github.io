@@ -34,14 +34,14 @@
       50% { opacity: 0.6; }
     }
 
-    /* 💫 呼吸动画（优化后） */
+    /* 💓 强化版呼吸动画：明显忽大忽小 */
     @keyframes breath {
       0%, 100% {
-        transform: scale(1);
-        opacity: 0.92;
+        transform: scale(0.92);
+        opacity: 0.85;
       }
-      55% {
-        transform: scale(1.12);
+      50% {
+        transform: scale(1.32);
         opacity: 1;
       }
     }
@@ -54,7 +54,7 @@
       top: 30%;
       z-index: 10;
       cursor: pointer;
-      animation: breath 2.0s infinite ease-in-out; /* ← 关键修改 */
+      animation: breath 2.0s infinite ease-in-out;
       pointer-events: auto;
     }
 
@@ -73,17 +73,18 @@
       border-radius: 50%;
       transform: translate(-50%, -50%);
       box-shadow:
-        0 0 6px rgba(255, 255, 255, 0.9),
-        0 0 12px rgba(255, 255, 255, 0.7),
-        0 0 20px rgba(255, 255, 255, 0.5);
+        0 0 8px rgba(255, 255, 255, 0.9),
+        0 0 16px rgba(255, 255, 255, 0.7),
+        0 0 28px rgba(255, 255, 255, 0.5);
     }
+
     .thought-star:hover::after {
       width: 8px;
       height: 8px;
       box-shadow:
-        0 0 10px rgba(255, 255, 255, 1),
-        0 0 20px rgba(255, 255, 255, 0.9),
-        0 0 30px rgba(255, 255, 255, 0.7);
+        0 0 12px rgba(255, 255, 255, 1),
+        0 0 24px rgba(255, 255, 255, 0.9),
+        0 0 40px rgba(255, 255, 255, 0.7);
     }
 
     #smile-hint {
@@ -148,3 +149,6 @@
 
 </body>
 </html>
+</body>
+</html>
+
