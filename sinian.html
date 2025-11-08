@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>∩_∩</title>
   <style>
     body {
@@ -11,6 +11,8 @@
       overflow: hidden;
       background: #f0f8ff; /* 超级浅的冰蓝紫色背景 */
       font-family: "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     .popup {
       position: absolute;
@@ -47,18 +49,47 @@
 <body>
 
 <script>
-  const messages = ['喜欢你','我想你了','要开心呀','你很重要','每天都要快乐','学习顺利','好好休息','我好想你'];
+  const messages = [
+    '祝你每天都\n顺顺利利的',
+    '如果感到累了\n要好好休息哦',
+    '学习顺利',
+    '每天都要\n开开心心的呀',
+    '你是我\n很重要的人',
+    '喜欢我\n好不好',
+    '喜欢你',
+    '我喜欢你',
+    '想你',
+    '要开心呀',
+    '我想你了',
+    '我好想你',
+    '今天有没有\n好好吃饭呀',
+    '别熬夜啦\n对身体不好',
+    '天气变凉了\n要记得加衣服',
+    '希望你今天\n也被温柔对待',
+    '不开心的时候\n可以找我哦',
+    '我会一直\n在这里等你',
+    '你值得被\n所有人喜欢',
+    '抱抱你\n（轻轻的）',
+    '今天的你\n也很努力吧',
+    '累了就休息\n我不会走远',
+    '星星会替我\n一直看着你',
+    '你在我心里\n是特别的存在',
+    '能不能\n也喜欢我',
+    '偷偷告诉你\n超级喜欢你',
+    '你抬头看\n那颗最亮的星是我',
+    '要一直开心呀'
+  ];
 
   // 💕 浅粉 / 浅蓝 / 浅紫 / 浅红 / 浅黄 —— 柔和糖果色
   const colors = [
-  '#FFF0F5', // 极浅粉
-  '#E6FFFF', // 极浅蓝
-  '#F8F7FF', // 极浅紫
-  '#FFF0F0', // 极浅红（樱花）
-  '#FFFFEB', // 极浅黄（奶油）
-  '#FAF9FF', // 更淡的紫
-  '#F0FEFF', // 极浅青（薄荷感）
-  '#FFF2F0'  // 极浅珊瑚
+    '#FFF0F5', // 极浅粉
+    '#E6FFFF', // 极浅蓝
+    '#F8F7FF', // 极浅紫
+    '#FFF0F0', // 极浅红（樱花）
+    '#FFFFEB', // 极浅黄（奶油）
+    '#FAF9FF', // 更淡的紫
+    '#F0FEFF', // 极浅青（薄荷感）
+    '#FFF2F0'  // 极浅珊瑚
   ];
 
   let allPopups = [];
